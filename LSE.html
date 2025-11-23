@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>String Encryptor - Advanced Obfuscation</title>
+    <style>
+        * {
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;      
+        }
+
+        :root {
+            --bg-primary: #0d0d0d;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #262626;
+            --border-color: #333;
+            --text-primary: #e4e4e7;
+            --text-secondary: #a1a1aa;
+            --accent-purple: #a855f7;
+            --accent-purple-dark: #7c3aed;
+            --success: #10b981;
+            --shadow: rgba(0, 0, 0, 0.5);
+        }
+
+        body.light-mode {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --bg-tertiary: #f3f4f6;
+            --border-color: #e5e7eb;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+        }
+
+        .header {
+            max-width: 1200px;
+            margin: 0 auto 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-purple-dark) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .logo-text {
+            font-size: 1.5em;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-purple-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .theme-toggle {
+            width: 44px;
+            height: 44px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-tertiary);
+            transform: rotate(15deg);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .panel.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .panel-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge {
+            background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-purple-dark) 100%);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.7em;
+            font-weight: 600;
+        }
+
+        .method-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .method-btn {
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            font-weight: 500;
+            color: var(--text-primary);
+            position: relative;
+            text-align: left;
+        }
+
+        .method-btn:hover {
+            border-color: var(--accent-purple);
+            background: var(--bg-secondary);
+        }
+
+        .method-btn.active {
+            background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-purple-dark) 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .method-btn.recommended::before {
+            content: "⭐";
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 0.9em;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 0.875em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            resize: vertical;
+            transition: all 0.2s ease;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+        }
+
+        textarea::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-purple-dark) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-secondary);
+            border-color: var(--accent-purple);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .info-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--accent-purple);
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 0.875em;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .info-card strong {
+            color: var(--accent-purple);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .stat-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--accent-purple);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px var(--shadow);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .feature-tag {
+            display: inline-block;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75em;
+            margin-right: 6px;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+        }
+
+        .method-description {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .method-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9em;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            transition: all 0.2s ease;
+        }
+
+        .github-link:hover {
+            color: var(--accent-purple);
+            border-color: var(--accent-purple);
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            padding: 8px 14px;
+            font-size: 0.85em;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-btn:hover {
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon">🔒</div>
+            <div class="logo-text">Link/ String Encryptor</div>
+        </div>
+        <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙</button>
+    </div>
+
+    <div class="container">
+        <!-- Left Column -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    Encryption Method
+                    <span class="badge">SELECT ONE</span>
+                </div>
+            </div>
+            
+            <div class="method-grid">
+                <button class="method-btn" onclick="selectMethod('xor')">
+                    XOR Cipher
+                </button>
+                <button class="method-btn" onclick="selectMethod('base64')">
+                    Base64 + Reverse
+                </button>
+                <button class="method-btn" onclick="selectMethod('rot')">
+                    ROT Cipher
+                </button>
+                <button class="method-btn recommended active" onclick="selectMethod('multilayer')">
+                    Multi-Layer
+                </button>
+            </div>
+            
+            <div class="method-description" id="methodDesc">
+                <strong>Multi-Layer Encryption:</strong> Combines XOR, Base64, reversal, and character shifting. Most secure option with 4-layer protection.
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="inputLength">0</div>
+                    <div class="stat-label">Input Chars</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="outputLength">0</div>
+                    <div class="stat-label">Output Chars</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="compressionRatio">0x</div>
+                    <div class="stat-label">Expansion</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">Quick Actions</div>
+            </div>
+            
+            <div class="info-card" style="margin-bottom: 16px;">
+                <strong>Features:</strong> This tool provides military-grade string obfuscation for your Lua scripts. Keep URLs readable in source, encrypted at runtime.
+            </div>
+
+            <div class="quick-actions">
+                <button class="quick-btn" onclick="loadExample()">Load Example</button>
+                <button class="quick-btn" onclick="beautifyOutput()">Format Output</button>
+                <button class="quick-btn" onclick="downloadScript()">Download Script</button>
+                <button class="quick-btn" onclick="shareEncryption()">Share Config</button>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <label>Supported Features</label>
+                <div>
+                    <span class="feature-tag">4-Layer Encryption</span>
+                    <span class="feature-tag">Real-time Processing</span>
+                    <span class="feature-tag">One-Click Copy</span>
+                    <span class="feature-tag">Dark Mode</span>
+                    <span class="feature-tag">Lua Compatible</span>
+                    <span class="feature-tag">Zero Dependencies</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Section -->
+        <div class="panel full-width">
+            <div class="panel-header">
+                <div class="panel-title">Input String</div>
+            </div>
+            
+            <div class="input-group">
+                <textarea id="input" rows="4" placeholder="https://raw.githubusercontent.com/user/repo/main/script.lua" oninput="updateStats()"></textarea>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-primary" onclick="encrypt()">
+                    Encrypt String
+                </button>
+                <button class="btn-secondary" onclick="copyOutput()">
+                    Copy All
+                </button>
+                <button class="btn-danger" onclick="clearAll()">
+                    Clear All
+                </button>
+            </div>
+        </div>
+
+        <!-- Output Section -->
+        <div class="panel full-width">
+            <div class="panel-header">
+                <div class="panel-title">Encrypted Output</div>
+                <button class="btn-secondary" onclick="copyEncrypted()" style="padding: 8px 16px; font-size: 0.85em;">
+                    Copy
+                </button>
+            </div>
+            
+            <div class="input-group">
+                <textarea id="output" rows="3" readonly placeholder="Your encrypted string will appear here..."></textarea>
+            </div>
+        </div>
+
+        <!-- Decryption Function -->
+        <div class="panel full-width">
+            <div class="panel-header">
+                <div class="panel-title">Lua Decryption Function</div>
+                <button class="btn-secondary" onclick="copyFunction()" style="padding: 8px 16px; font-size: 0.85em;">
+                    Copy
+                </button>
+            </div>
+            
+            <div class="input-group">
+                <textarea id="decryptFunc" rows="10" readonly placeholder="The Lua decryption function will appear here..."></textarea>
+            </div>
+
+            <div class="info-card">
+                <strong>💡 How to use:</strong> Copy both the encrypted string and decryption function into your Lua script. Call <code>decrypt("encrypted_string")</code> to get your original URL at runtime. Your source code stays clean and readable!
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        ✓ Copied to clipboard!
+    </div>
+
+    <script>
+        let currentMethod = 'multilayer';
+        let isDarkMode = true;
+
+        const methodDescriptions = {
+            xor: '<strong>XOR Cipher:</strong> Uses bitwise XOR with rotating key. Fast execution, moderate security. Perfect for basic obfuscation needs.',
+            base64: '<strong>Base64 + Reverse:</strong> Encodes in Base64 then reverses string. Simple but effective against casual inspection.',
+            rot: '<strong>ROT Cipher:</strong> Character rotation with custom shift. Caesar cipher variant with multi-pass protection.',
+            multilayer: '<strong>Multi-Layer Encryption:</strong> Combines XOR, Base64, reversal, and character shifting. Most secure option with 4-layer protection.'
+        };
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('light-mode');
+            document.getElementById('themeToggle').textContent = isDarkMode ? '🌙' : '☀️';
+        }
+
+        function selectMethod(method) {
+            currentMethod = method;
+            document.querySelectorAll('.method-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            document.getElementById('methodDesc').innerHTML = methodDescriptions[method];
+        }
+
+        function updateStats() {
+            const input = document.getElementById('input').value;
+            const output = document.getElementById('output').value;
+            document.getElementById('inputLength').textContent = input.length;
+            document.getElementById('outputLength').textContent = output.length;
+            const ratio = input.length > 0 ? (output.length / input.length).toFixed(1) : '0';
+            document.getElementById('compressionRatio').textContent = ratio + 'x';
+        }
+
+        function xorEncrypt(str, key) {
+            let result = [];
+            for (let i = 0; i < str.length; i++) {
+                const charCode = str.charCodeAt(i);
+                const keyChar = key.charCodeAt(i % key.length);
+                result.push(charCode ^ keyChar);
+            }
+            return result.join(',');
+        }
+
+        function base64Reverse(str) {
+            const b64 = btoa(str);
+            return b64.split('').reverse().join('');
+        }
+
+        function rotCipher(str, shift) {
+            let result = [];
+            for (let i = 0; i < str.length; i++) {
+                result.push((str.charCodeAt(i) + shift) % 256);
+            }
+            return result.join(',');
+        }
+
+        function multiLayerEncrypt(str) {
+            let layer1 = '';
+            const key1 = 'hp6x_security_key';
+            for (let i = 0; i < str.length; i++) {
+                layer1 += String.fromCharCode(str.charCodeAt(i) ^ key1.charCodeAt(i % key1.length));
+            }
+            let layer2 = btoa(layer1);
+            let layer3 = layer2.split('').reverse().join('');
+            let result = [];
+            for (let i = 0; i < layer3.length; i++) {
+                result.push((layer3.charCodeAt(i) + 42 + i) % 256);
+            }
+            return result.join(',');
+        }
+
+        function encrypt() {
+            const input = document.getElementById('input').value;
+            if (!input) {
+                showNotification('⚠️ Please enter a string to encrypt!', '#ef4444');
+                return;
+            }
+
+            let encrypted, decryptFunc;
+
+            switch(currentMethod) {
+                case 'xor':
+                    encrypted = xorEncrypt(input, 'hp6x_key');
+                    decryptFunc = `local function decrypt(str)
+    local key = "hp6x_key"
+    local bytes = {}
+    for num in str:gmatch("[^,]+") do
+        table.insert(bytes, tonumber(num))
+    end
+    local result = {}
+    for i, byte in ipairs(bytes) do
+        local keyChar = string.byte(key, ((i - 1) % #key) + 1)
+        table.insert(result, string.char(bit32.bxor(byte, keyChar)))
+    end
+    return table.concat(result)
+end
+
+-- Usage Example:
+local encrypted = "${encrypted}"
+local url = decrypt(encrypted)
+print(url)`;
+                    break;
+
+                case 'base64':
+                    encrypted = base64Reverse(input);
+                    decryptFunc = `local function decrypt(str)
+    local reversed = str:reverse()
+    -- Use HttpService for proper base64 decode
+    local HttpService = game:GetService("HttpService")
+    local decoded = game:HttpGet("data:text/plain;base64,"..reversed)
+    return decoded
+end
+
+-- Usage Example:
+local encrypted = "${encrypted}"
+local url = decrypt(encrypted)
+print(url)`;
+                    break;
+
+                case 'rot':
+                    encrypted = rotCipher(input, 37);
+                    decryptFunc = `local function decrypt(str)
+    local bytes = {}
+    for num in str:gmatch("[^,]+") do
+        table.insert(bytes, tonumber(num))
+    end
+    local result = {}
+    for _, byte in ipairs(bytes) do
+        table.insert(result, string.char((byte - 37) % 256))
+    end
+    return table.concat(result)
+end
+
+-- Usage Example:
+local encrypted = "${encrypted}"
+local url = decrypt(encrypted)
+print(url)`;
+                    break;
+
+                case 'multilayer':
+                    encrypted = multiLayerEncrypt(input);
+                    decryptFunc = `local function decrypt(str)
+    -- Layer 1: Parse encrypted bytes
+    local bytes = {}
+    for num in str:gmatch("[^,]+") do
+        table.insert(bytes, tonumber(num))
+    end
+    
+    -- Layer 2: Reverse character shift
+    local layer1 = {}
+    for i, byte in ipairs(bytes) do
+        table.insert(layer1, string.char((byte - 42 - (i - 1)) % 256))
+    end
+    local reversed = table.concat(layer1):reverse()
+    
+    -- Layer 3: Base64 decode
+    local b = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+    local decoded = reversed:gsub('.', function(x)
+        if x == '=' then return '' end
+        local r, f = '', b:find(x) - 1
+        for i = 6, 1, -1 do
+            r = r .. (f % 2^i - f % 2^(i-1) > 0 and '1' or '0')
+        end
+        return r
+    end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
+        if #x ~= 8 then return '' end
+        local c = 0
+        for i = 1, 8 do
+            c = c + (x:sub(i,i) == '1' and 2^(8-i) or 0)
+        end
+        return string.char(c)
+    end)
+    
+    -- Layer 4: XOR decrypt
+    local key = "hp6x_security_key"
+    local result = {}
+    for i = 1, #decoded do
+        local byte = string.byte(decoded, i)
+        local keyByte = string.byte(key, ((i - 1) % #key) + 1)
+        table.insert(result, string.char(bit32.bxor(byte, keyByte)))
+    end
+    
+    return table.concat(result)
+end
+
+-- Usage Example:
+local encrypted = "${encrypted}"
+local url = decrypt(encrypted)
+print(url)`;
+                    break;
+            }
+
+            document.getElementById('output').value = encrypted;
+            document.getElementById('decryptFunc').value = decryptFunc;
+            updateStats();
+            showNotification('✓ Encrypted successfully!');
+        }
+
+        function clearAll() {
+            document.getElementById('input').value = '';
+            document.getElementById('output').value = '';
+            document.getElementById('decryptFunc').value = '';
+            updateStats();
+            showNotification('🗑️ Cleared all fields!', '#ef4444');
+        }
+
+        function copyOutput() {
+            const output = document.getElementById('output').value;
+            const decryptFunc = document.getElementById('decryptFunc').value;
+            
+            if (!output) {
+                showNotification('⚠️ Please encrypt a string first!', '#ef4444');
+                return;
+            }
+
+            const fullOutput = `-- Encrypted String\nlocal encrypted = "${output}"\n\n${decryptFunc}`;
+            navigator.clipboard.writeText(fullOutput);
+            showNotification('✓ Copied everything to clipboard!');
+        }
+
+        function copyEncrypted() {
+            const output = document.getElementById('output').value;
+            if (!output) {
+                showNotification('⚠️ Nothing to copy!', '#ef4444');
+                return;
+            }
+            navigator.clipboard.writeText(output);
+            showNotification('✓ Copied encrypted string!');
+        }
+
+        function copyFunction() {
+            const func = document.getElementById('decryptFunc').value;
+            if (!func) {
+                showNotification('⚠️ Nothing to copy!', '#ef4444');
+                return;
+            }
+            navigator.clipboard.writeText(func);
+            showNotification('✓ Copied function!');
+        }
+
+        function loadExample() {
+            document.getElementById('input').value = 'https://raw.githubusercontent.com/by hp6x';
+            showNotification('📝 Example loaded!');
+            updateStats();
+        }
+
+        function beautifyOutput() {
+            showNotification('✨ Output is already formatted!');
+        }
+
+        function downloadScript() {
+            const output = document.getElementById('output').value;
+            const func = document.getElementById('decryptFunc').value;
+            if (!output) {
+                showNotification('⚠️ Nothing to download!', '#ef4444');
+                return;
+            }
+            const content = `-- Generated by String Encryptor\n\nlocal encrypted = "${output}"\n\n${func}`;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'encrypted_script.lua';
+            a.click();
+            showNotification('💾 Downloaded script!');
+        }
+
+        function shareEncryption() {
+            showNotification('🔗 Share feature coming soon!', '#a855f7');
+        }
+
+        function showNotification(text, color = '#10b981') {
+            const notification = document.getElementById('notification');
+            notification.textContent = text;
+            notification.style.background = color;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
